@@ -127,3 +127,7 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+/P3ReID/datasets
+/P3ReID/.idea
+/P3ReID/weights
