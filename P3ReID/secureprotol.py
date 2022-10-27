@@ -4,8 +4,6 @@ import time
 import numpy as np
 import multiprocessing
 
-from util import invert, powmod, getprimeover, isqrt, extended_euclidean_algorithm
-from encoding import EncodedNumber
 
 
 class SecureComputing(object):

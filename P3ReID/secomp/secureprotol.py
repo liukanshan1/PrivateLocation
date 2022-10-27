@@ -3,8 +3,7 @@ import random
 import time
 import numpy as np
 
-from util import invert, powmod, getprimeover, isqrt, extended_euclidean_algorithm
-from encoding import EncodedNumber
+
 
 class SecureComputing(object):
     DEFAULT_SIGMA = 118

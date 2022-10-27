@@ -25,7 +25,7 @@ try:
 except ImportError:
     Mapping = dict
 
-from encoding import EncodedNumber
+from test.encoding import EncodedNumber
 from util import invert, powmod, getprimeover, isqrt, extended_euclidean_algorithm
 
 # Paillier cryptosystem is based on integer factorisation.
