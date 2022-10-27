@@ -77,6 +77,7 @@ class PartialPaillierPrivateKey(object):
           tuple: partially private key 1 (sk1) and partially private key 2 (sk2)
     """
     def __init__(self, public_key, private_key, sigma_len):
+        # TODO
         self.n = public_key.n
         # sk1\in(1, 2^sigma_len)
         self.sk1 = random.SystemRandom().randrange(1, 1 << sigma_len)

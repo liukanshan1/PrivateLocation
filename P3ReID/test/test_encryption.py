@@ -5,7 +5,7 @@ from encryption import paillier
 import numpy as np
 
 from test.opt import opt
-from model_util import loadNetwork, extractFeatures, list_pictures
+from model.model_util import loadNetwork, extractFeatures, list_pictures
 
 if __name__ == '__main__':
 

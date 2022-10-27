@@ -1,9 +1,8 @@
 import numpy as np
-import random
 
 from encryption import paillier
 from model.opt import opt
-from model_util import loadNetwork, extractFeatures, extractFeature, list_pictures
+from model.model_util import loadNetwork, extractFeatures, list_pictures
 from secomp.secureprotol import SecureComputing
 
 if __name__ == '__main__':
@@ -18,6 +17,7 @@ if __name__ == '__main__':
     galleryPath = './datasets/Market-1501/gallery15'
     gallery = list_pictures(galleryPath)
     gf = extractFeatures(model, gallery)
+    # TODO
     g_g_dist = np.dot(gf, np.transpose(gf))
     k = len(gallery) // 2
     g_dist_k = np.zeros(len(gallery))
@@ -51,7 +51,7 @@ if __name__ == '__main__':
     public_key, private_key, partial_private_keys = paillier.generate_paillier_keypair(n_length=256)
     # encrypt gallery
     gf_numpy = gf.numpy()
-    enc_gf = np.zeros((len(gf_numpy),len(gf_numpy[0])), dtype=paillier.EncryptedNumber)
+    enc_gf = np.zeros((len(gf_numpy), len(gf_numpy[0])), dtype=paillier.EncryptedNumber)
     for i in range(len(gf_numpy)):
         for j in range(len(gf_numpy[i])):
             enc_gf[i][j] = public_key.encrypt(gf_numpy[i][j].item())

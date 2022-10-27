@@ -1,13 +1,11 @@
 import time
 
 import numpy as np
-import random
-import torch
 import multiprocessing
 
 from encryption import paillier
 from model.opt import opt
-from model_util import loadNetwork, extractFeatures, extractFeature, list_pictures
+from model.model_util import loadNetwork, extractFeatures, list_pictures
 from secomp.secureprotol import SecureComputing
 
 if __name__ == '__main__':
