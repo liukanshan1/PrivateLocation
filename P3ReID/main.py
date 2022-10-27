@@ -11,11 +11,11 @@ if __name__ == '__main__':
     model = loadNetwork(opt.weight)
     print('model loading success!')
 
-    queryPath = '../../../datasets/Market-1501/query50'
+    queryPath = './datasets/Market-1501/query50'
     probe = list_pictures(queryPath)
     qf = extractFeatures(model, probe)
 
-    galleryPath = 'C:\\Users\\12695\\OneDrive - arocyx\\文档\\GitHub\\行人重识别\\datasets\\Market-1501\\gallery15'
+    galleryPath = './datasets/Market-1501/gallery15'
     gallery = list_pictures(galleryPath)
     gf = extractFeatures(model, gallery)
     g_g_dist = np.dot(gf, np.transpose(gf))
