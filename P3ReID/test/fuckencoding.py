@@ -1,7 +1,7 @@
 import fractions
 import random
 
-import paillier
+from test import paillier
 
 from test.fixedpoint import FixedPointNumber
 

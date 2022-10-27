@@ -1,8 +1,5 @@
 import random
-import time
-import paillier
-
-from util import invert, powmod, getprimeover, isqrt, extended_euclidean_algorithm
+from test import paillier
 
 if __name__ == '__main__':
     """n_length = 256

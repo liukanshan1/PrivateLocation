@@ -1,8 +1,7 @@
 import multiprocessing
 import time
-import paillier
+from test import paillier
 
-from util import invert, powmod, getprimeover, isqrt, extended_euclidean_algorithm
 
 def add(x, y):
 	return x+y

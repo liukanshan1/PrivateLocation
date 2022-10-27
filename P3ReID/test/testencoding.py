@@ -2,7 +2,7 @@ import math
 import random
 
 from encoding import EncodedNumber
-import paillier
+from test import paillier
 
 from test.fixedpoint import FixedPointNumber
 from test.encoding_o import EncodedNumber1
