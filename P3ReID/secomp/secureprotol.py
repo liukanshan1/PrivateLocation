@@ -210,6 +210,9 @@ class SecureComputing(object):
     def get_random_with_sigmbits(self, sigm_len):
         """Return a cryptographically random number less than :attr:`n`"""
         return random.SystemRandom().randrange(1 << sigm_len - 1, 1 << sigm_len)
+
+    def sdistant(self, eloc1, eloc2):
+        pass
             
 
 if __name__ == '__main__':
