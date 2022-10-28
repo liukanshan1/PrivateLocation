@@ -211,8 +211,12 @@ class SecureComputing(object):
         """Return a cryptographically random number less than :attr:`n`"""
         return random.SystemRandom().randrange(1 << sigm_len - 1, 1 << sigm_len)
 
-    def sdistant(self, eloc1, eloc2):
-        pass
+    def sdistance(self, eloc1, eloc2, sk):
+        enc_x1x2 = self.smul(eloc1.x, eloc2.x)
+        print(sk.decrypt(enc_x1x2))
+        enc_y1y2 = self.smul(eloc1.y, eloc2.y)
+        enc_z1z2 = self.smul(eloc1.z, eloc2.z)
+        return eloc1.xx + eloc2.xx + eloc1.yy + eloc2.yy + eloc1.zz + eloc2.zz - 2 * (enc_x1x2 + enc_y1y2 + enc_z1z2)
             
 
 if __name__ == '__main__':

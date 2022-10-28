@@ -1,4 +1,4 @@
-import utils
+from location import utils
 
 
 class Location:
@@ -9,12 +9,16 @@ class Location:
         self.r = radius
 
     def __str__(self):
-        print("时间：", self.t, "纬度：", self.lat, "经度：", self.lon, "半径：", self.r)
+        return "时间：" + str(self.t) + "纬度：" + str(self.lat) + "经度：" + str(self.lon) + "半径：" + str(self.r)
 
     def enc(self, public_key):
         # self.lon, self.lat = wgs84_to_gcj02(self.lon, self.lat)
         x, y, z = utils.gcj02_to_coord(self.lon, self.lat)
         return encLocation(public_key, self.t, x, y, z, self.r)
+
+    def toXYZ(self):
+        x, y, z = utils.gcj02_to_coord(self.lon, self.lat)
+        return x, y, z
 
 
 class encLocation:
@@ -22,6 +26,9 @@ class encLocation:
         self.pk = pk
         self.t = time
         self.x = pk.encrypt(x)
+        self.xx = pk.encrypt(x * x)
         self.y = pk.encrypt(y)
+        self.yy = pk.encrypt(y * y)
         self.z = pk.encrypt(z)
+        self.zz = pk.encrypt(z * z)
         self.r = radius
