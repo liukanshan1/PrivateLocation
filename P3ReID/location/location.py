@@ -2,22 +2,30 @@ from location import utils
 
 
 class Location:
-    def __init__(self, time, lat, lon, radius):
+    def __init__(self, time, lat, lon, radius, neg=False):
         self.t = time
         self.lat = lat
         self.lon = lon
         self.r = radius
+        self.neg = neg
 
     def __str__(self):
         return "时间：" + str(self.t) + "纬度：" + str(self.lat) + "经度：" + str(self.lon) + "半径：" + str(self.r)
 
     def enc(self, public_key):
         # self.lon, self.lat = wgs84_to_gcj02(self.lon, self.lat)
-        x, y, z = utils.gcj02_to_coord(self.lon, self.lat)
+        x, y, z = self.toXYZ()
         return encLocation(public_key, self.t, x, y, z, self.r)
 
     def toXYZ(self):
         x, y, z = utils.gcj02_to_coord(self.lon, self.lat)
+        if self.neg:
+            x = -x
+            y = -y
+            z = -z
+        x = round(x)
+        y = round(y)
+        z = round(z)
         return x, y, z
 
 

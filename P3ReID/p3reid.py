@@ -17,7 +17,7 @@ if __name__ == '__main__':
     galleryPath = './datasets/Market-1501/gallery15'
     gallery = list_pictures(galleryPath)
     gf = extractFeatures(model, gallery)
-    # TODO
+    # TODO 这里是KNN？
     g_g_dist = np.dot(gf, np.transpose(gf))
     k = len(gallery) // 2
     g_dist_k = np.zeros(len(gallery))
@@ -70,7 +70,7 @@ if __name__ == '__main__':
     for i in range(len(qf_numpy)):
         for j in range(len(qf_numpy[i])):
             enc_qf[i][j] = public_key.encrypt(qf_numpy[i][j].item())
-            #print(private_key.decrypt(enc_qf[i][j]), qf_numpy[i][j].item())
+            # print(private_key.decrypt(enc_qf[i][j]), qf_numpy[i][j].item())
 
     enc_q_g_dist, q_g_dist1 = sc.sdot(enc_qf, enc_gf)
 
