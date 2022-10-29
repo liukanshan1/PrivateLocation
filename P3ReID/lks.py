@@ -25,6 +25,8 @@ if __name__ == '__main__':
     # encrypt
     enc_loc1 = loc1.enc(public_key)
     enc_loc2 = loc2.enc(public_key)
+    # print(private_key.decrypt(enc_loc1.x), " ", private_key.decrypt(enc_loc1.y), " ", private_key.decrypt(enc_loc1.z))
+    # print(private_key.decrypt(enc_loc2.x), " ", private_key.decrypt(enc_loc2.y), " ", private_key.decrypt(enc_loc2.z))
     enc_distant = sc.sdistance(enc_loc1, enc_loc2)
     print(math.sqrt(private_key.decrypt(enc_distant)))
 

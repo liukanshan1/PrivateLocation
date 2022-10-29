@@ -15,7 +15,7 @@ class Location:
     def enc(self, public_key):
         # self.lon, self.lat = wgs84_to_gcj02(self.lon, self.lat)
         x, y, z = self.toXYZ()
-        return encLocation(public_key, self.t, x, y, z, self.r)
+        return encLocation(public_key, self.t, x, y, z, self.r, self.neg)
 
     def toXYZ(self):
         x, y, z = utils.gcj02_to_coord(self.lon, self.lat)
@@ -30,13 +30,19 @@ class Location:
 
 
 class encLocation:
-    def __init__(self, pk, time, x, y, z, radius):
+    def __init__(self, pk, time, x, y, z, radius, neg=False):
         self.pk = pk
         self.t = time
-        self.x = pk.encrypt(x)
+        if neg:
+            self.x = pk.encrypt(x * 2)
+            self.y = pk.encrypt(y * 2)
+            self.z = pk.encrypt(z * 2)
+        else:
+            self.x = pk.encrypt(x)
+            self.y = pk.encrypt(y)
+            self.z = pk.encrypt(z)
         self.xx = pk.encrypt(x * x)
-        self.y = pk.encrypt(y)
         self.yy = pk.encrypt(y * y)
-        self.z = pk.encrypt(z)
         self.zz = pk.encrypt(z * z)
+
         self.r = radius

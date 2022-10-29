@@ -212,10 +212,13 @@ class SecureComputing(object):
         return random.SystemRandom().randrange(1 << sigm_len - 1, 1 << sigm_len)
 
     def sdistance(self, eloc1, eloc2):
-        two = self.cp.public_key.encrypt(2) # TODO ×2优化到服务端
-        enc_x1x2 = self.smul(two, self.smul(eloc1.x, eloc2.x))
-        enc_y1y2 = self.smul(two, self.smul(eloc1.y, eloc2.y))
-        enc_z1z2 = self.smul(two, self.smul(eloc1.z, eloc2.z))
+        # two = self.cp.public_key.encrypt(2)
+        # enc_x1x2 = self.smul(two, self.smul(eloc1.x, eloc2.x))
+        # enc_y1y2 = self.smul(two, self.smul(eloc1.y, eloc2.y))
+        # enc_z1z2 = self.smul(two, self.smul(eloc1.z, eloc2.z))
+        enc_x1x2 = self.smul(eloc1.x, eloc2.x)
+        enc_y1y2 = self.smul(eloc1.y, eloc2.y)
+        enc_z1z2 = self.smul(eloc1.z, eloc2.z)
         return eloc1.xx + eloc2.xx + eloc1.yy + eloc2.yy + eloc1.zz + eloc2.zz + enc_x1x2 + enc_y1y2 + enc_z1z2
             
 
