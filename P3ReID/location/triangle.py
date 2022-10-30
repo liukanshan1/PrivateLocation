@@ -1,5 +1,7 @@
 import math
 import random
+import matplotlib.pyplot as plt
+import numpy as np
 
 
 class Area:
@@ -13,12 +15,18 @@ class Area:
         return self.A * point.x + self.B * point.y + self.C * point.z + self.D == 0
 
     def get_x(self, y, z):
+        if self.A == 0:
+            return 0
         return -(self.B * y + self.C * z + self.D) / self.A
 
     def get_y(self, x, z):
+        if self.B == 0:
+            return 0
         return -(self.A * x + self.C * z + self.D) / self.B
 
     def get_z(self, x, y):
+        if self.C == 0:
+            return 0
         return -(self.A * x + self.B * y + self.D) / self.C
 
     def __str__(self):
@@ -120,16 +128,38 @@ class Triangle:
         triangle3 = Triangle.create_triangle(self.point3, self.point1, point)
         if not self.square == triangle1.get_square() + triangle2.get_square() + triangle3.get_square():
             return False
+        # if not abs(self.square - (triangle1.get_square() + triangle2.get_square() + triangle3.get_square())) < 0.1:
+        #     return False
         return True
 
     def get_point(self):
-        while True:
-            x = random.uniform(self.min_x, self.max_x)
-            y = random.uniform(self.min_y, self.max_y)
-            z = self.area.get_z(x, y)
-            point = Point.create_point(x, y, z)
-            if self.is_inside(point):
-                return point
+        coin = random.choice([0, 0, 0, 1, 2, 3])
+        if coin == 0:
+            while True:
+                x = random.uniform(self.min_x, self.max_x)
+                y = random.uniform(self.min_y, self.max_y)
+                z = self.area.get_z(x, y)
+                point = Point.create_point(x, y, z)
+                if self.is_inside(point):
+                    return point
+        else:
+            x_range = (self.max_x - self.min_x) * 0.3
+            y_range = (self.max_y - self.min_y) * 0.3
+            while True:
+                if coin == 1:
+                    x = random.uniform(-x_range, x_range) + self.point1.x
+                    y = random.uniform(-y_range, y_range) + self.point1.y
+                elif coin == 2:
+                    x = random.uniform(-x_range, x_range) + self.point2.x
+                    y = random.uniform(-y_range, y_range) + self.point2.y
+                else:
+                    x = random.uniform(-x_range, x_range) + self.point3.x
+                    y = random.uniform(-y_range, y_range) + self.point3.y
+                z = self.area.get_z(x, y)
+                point = Point.create_point(x, y, z)
+                if self.is_inside(point):
+                    return point
+
 
     def get_radius(self, point):
         triangle1 = Triangle.create_triangle(self.point1, self.point2, point)
@@ -149,24 +179,26 @@ class Triangle:
         return result
 
 
+def plot_circle(center=(3, 3), r=2):
+    x = np.linspace(center[0] - r, center[0] + r, 5000)
+    y1 = np.sqrt(r ** 2 - (x - center[0]) ** 2) + center[1]
+    y2 = -np.sqrt(r ** 2 - (x - center[0]) ** 2) + center[1]
+    plt.plot(x, y1, c='k')
+    plt.plot(x, y2, c='k')
+
+
 if __name__ == '__main__':
-    p1 = Point.create_point(1, 0, 0)
-    p2 = Point.create_point(0, 1, 0)
-    p3 = Point.create_point(0, 0, 1)
-    print(p1.get_distant(p2))
-    print(Point.distant(p1, p2))
-    area = Area(p1, p2, p3)
-    print(area.get_x(0.5, 0.5))
-    print(area.get_y(0.5, 0.5))
-    print(area.get_z(0.5, 0.5))
-    print(area.is_inside(Point.create_point(0.5, 0.5, 0)))
+    p1 = Point.create_point(400, 200, 0)
+    p2 = Point.create_point(0, 400, 0)
+    p3 = Point.create_point(0, 0, 0)
     triangle = Triangle.create_triangle(p1, p2, p3)
-    print(triangle.get_square())
-    print(triangle.is_inside(Point.create_point(0.5, 0.5, 0)))
-    pp = triangle.get_point()
-    print(triangle.get_point())
-    print(triangle.is_inside(pp))
-    print(triangle.get_radius(pp))
-    print(triangle.get_circle(10))
-
-
+    circles = triangle.get_circle(200)
+    fig = plt.figure(num=1, figsize=(4, 4))
+    plt.xlim(-5, 405)
+    plt.ylim(-5, 405)
+    # plt.plot([400, 0], [200, 400])
+    # plt.plot([400, 0], [200, 0])
+    # plt.plot([0, 0], [400, 0])
+    for circle in circles:
+        plot_circle(center=(circle[0].x, circle[0].y), r=circle[1])
+    plt.show()
