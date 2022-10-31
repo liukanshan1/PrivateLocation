@@ -3,6 +3,8 @@ import random
 import matplotlib.pyplot as plt
 import numpy as np
 
+from location.location import Location, encLocation
+
 
 class Area:
     def __init__(self, p1, p2, p3):
@@ -177,8 +179,16 @@ class Triangle:
             result.append([point, radius])
         return result
 
+    def encrypt(self, pk, num=150):
+        circles = self.get_circle(num)
+        result = []
+        for circle in circles:
+            enc_loc = encLocation(pk, [], circle[0].x, circle[0].y, circle[0].z, circle[1], True)
+            result.append(enc_loc)
+        return result
 
-class rectangle:
+
+class Rectangle:
 
     def __init__(self, loc1, loc2, loc3, loc4):
         if loc1 is None:
@@ -198,7 +208,7 @@ class rectangle:
 
     @staticmethod
     def create_rectangle(p1, p2, p3, p4):
-        r = rectangle(None, None, None, None)
+        r = Rectangle(None, None, None, None)
         r.point1 = p1
         r.point2 = p2
         r.point3 = p3
@@ -218,6 +228,14 @@ class rectangle:
         result.extend(self.triangle4.get_circle(num))
         return result
 
+    def encrypt(self, pk, num=200):
+        circles = self.get_circle(num)
+        result = []
+        for circle in circles:
+            enc_loc = encLocation(pk, [], circle[0].x, circle[0].y, circle[0].z, circle[1], True)
+            result.append(enc_loc)
+        return result
+
 
 def plot_circle(center=(3, 3), r=2):
     x = np.linspace(center[0] - r, center[0] + r, 5000)
@@ -232,7 +250,7 @@ if __name__ == '__main__':
     p2 = Point.create_point(400, 0, 0)
     p3 = Point.create_point(400, 300, 0)
     p4 = Point.create_point(0, 300, 0)
-    rec = rectangle.create_rectangle(p1, p2, p3, p4)
+    rec = Rectangle.create_rectangle(p1, p2, p3, p4)
     circles = rec.get_circle(200)
     fig = plt.figure(num=1, figsize=(4, 4))
     plt.xlim(-5, 405)

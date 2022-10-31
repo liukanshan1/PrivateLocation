@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 from encryption import paillier
 import random
 import time
@@ -207,6 +209,19 @@ class SecureComputing(object):
                 #return res, sum_time
                 return res
 
+    def scomp(self, ev1, v2, sigm_len=None):
+        # Step-1
+        e_result = ev1 / v2
+        e_result1 = self.cp.partial_decrypt(e_result)
+        # Step-2
+        e_result2 = self.csp.partial_decrypt(e_result)
+        result = self.csp.final_decrypt(e_result1, e_result2) / (10 ** e_result2.exponent)
+        if result <= 1:
+            return True
+        else:
+            return False
+
+
     def get_random_with_sigmbits(self, sigm_len):
         """Return a cryptographically random number less than :attr:`n`"""
         return random.SystemRandom().randrange(1 << sigm_len - 1, 1 << sigm_len)
@@ -220,7 +235,42 @@ class SecureComputing(object):
         enc_y1y2 = self.smul(eloc1.y, eloc2.y)
         enc_z1z2 = self.smul(eloc1.z, eloc2.z)
         return eloc1.xx + eloc2.xx + eloc1.yy + eloc2.yy + eloc1.zz + eloc2.zz + enc_x1x2 + enc_y1y2 + enc_z1z2
-            
+
+    def is_inside_area(self, eloc, area, area_time=None, threshold=timedelta(minutes=10)):
+        # TODO 时间
+        if area_time is not None:
+            if not self.is_inside_time(eloc.t, area_time, threshold):
+                return False
+        for loc in area:
+            if self.scomp(self.sdistance(eloc, loc), (loc.r + eloc.r) ** 2):
+                return True
+        return False
+
+    def is_inside_time(self, loc_t, area_t, threshold):
+        loc_s = loc_t[0]
+        loc_e = loc_t[1]
+        area_s = area_t[0]
+        area_e = area_t[1]
+        if loc_s > area_e or loc_e < area_s: # 不相交
+            return False
+        else:
+            if loc_s >= area_s and loc_e <= area_e: # 包含
+                return True
+            if area_s >= loc_s and area_e <= loc_e: # 包含
+                return True
+            else:
+                if loc_s >= area_s:
+                    if loc_e - area_s > threshold:
+                        return True
+                    else:
+                        return False
+                else:
+                    if area_e - loc_s > threshold:
+                        return True
+                    else:
+                        return False
+
+
 
 if __name__ == '__main__':
     public_key, private_key, partial_private_keys = paillier.generate_paillier_keypair(n_length=512)

@@ -18,15 +18,7 @@ class Location:
         return encLocation(public_key, self.t, x, y, z, self.r, self.neg)
 
     def toXYZ(self):
-        x, y, z = utils.gcj02_to_coord(self.lon, self.lat)
-        if self.neg:
-            x = -x
-            y = -y
-            z = -z
-        x = round(x)
-        y = round(y)
-        z = round(z)
-        return x, y, z
+        return utils.gcj02_to_coord(self.lon, self.lat)
 
 
 class encLocation:
@@ -34,15 +26,23 @@ class encLocation:
         self.pk = pk
         self.t = time
         if neg:
+            x = -x
+            y = -y
+            z = -z
+            x = round(x)
+            y = round(y)
+            z = round(z)
             self.x = pk.encrypt(x * 2)
             self.y = pk.encrypt(y * 2)
             self.z = pk.encrypt(z * 2)
         else:
+            x = round(x)
+            y = round(y)
+            z = round(z)
             self.x = pk.encrypt(x)
             self.y = pk.encrypt(y)
             self.z = pk.encrypt(z)
         self.xx = pk.encrypt(x * x)
         self.yy = pk.encrypt(y * y)
         self.zz = pk.encrypt(z * z)
-
         self.r = radius
