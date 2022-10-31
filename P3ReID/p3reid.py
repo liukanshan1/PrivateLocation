@@ -17,7 +17,7 @@ if __name__ == '__main__':
     galleryPath = './datasets/Market-1501/gallery15'
     gallery = list_pictures(galleryPath)
     gf = extractFeatures(model, gallery)
-    # TODO 这里是KNN？
+
     g_g_dist = np.dot(gf, np.transpose(gf))
     k = len(gallery) // 2
     g_dist_k = np.zeros(len(gallery))

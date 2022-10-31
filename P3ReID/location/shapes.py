@@ -143,8 +143,8 @@ class Triangle:
                 if self.is_inside(point):
                     return point
         else:
-            x_range = (self.max_x - self.min_x) * 0.3
-            y_range = (self.max_y - self.min_y) * 0.3
+            x_range = (self.max_x - self.min_x) * 0.25
+            y_range = (self.max_y - self.min_y) * 0.25
             while True:
                 if coin == 1:
                     x = random.uniform(-x_range, x_range) + self.point1.x
@@ -159,7 +159,6 @@ class Triangle:
                 point = Point.create_point(x, y, z)
                 if self.is_inside(point):
                     return point
-
 
     def get_radius(self, point):
         triangle1 = Triangle.create_triangle(self.point1, self.point2, point)
@@ -179,6 +178,47 @@ class Triangle:
         return result
 
 
+class rectangle:
+
+    def __init__(self, loc1, loc2, loc3, loc4):
+        if loc1 is None:
+            self.point1 = None
+            self.point2 = None
+            self.point3 = None
+            self.point4 = None
+        else:
+            self.point1 = Point(loc1)
+            self.point2 = Point(loc2)
+            self.point3 = Point(loc3)
+            self.point4 = Point(loc4)
+            self.triangle1 = Triangle.create_triangle(self.point1, self.point2, self.point3)
+            self.triangle2 = Triangle.create_triangle(self.point3, self.point4, self.point1)
+            self.triangle3 = Triangle.create_triangle(self.point1, self.point2, self.point4)
+            self.triangle4 = Triangle.create_triangle(self.point2, self.point3, self.point4)
+
+    @staticmethod
+    def create_rectangle(p1, p2, p3, p4):
+        r = rectangle(None, None, None, None)
+        r.point1 = p1
+        r.point2 = p2
+        r.point3 = p3
+        r.point4 = p4
+        r.triangle1 = Triangle.create_triangle(r.point1, r.point2, r.point3)
+        r.triangle2 = Triangle.create_triangle(r.point3, r.point4, r.point1)
+        r.triangle3 = Triangle.create_triangle(r.point1, r.point2, r.point4)
+        r.triangle4 = Triangle.create_triangle(r.point2, r.point3, r.point4)
+        return r
+
+    def get_circle(self, num):
+        num = round(num / 4)
+        result = []
+        result.extend(self.triangle1.get_circle(num))
+        result.extend(self.triangle2.get_circle(num))
+        result.extend(self.triangle3.get_circle(num))
+        result.extend(self.triangle4.get_circle(num))
+        return result
+
+
 def plot_circle(center=(3, 3), r=2):
     x = np.linspace(center[0] - r, center[0] + r, 5000)
     y1 = np.sqrt(r ** 2 - (x - center[0]) ** 2) + center[1]
@@ -188,17 +228,34 @@ def plot_circle(center=(3, 3), r=2):
 
 
 if __name__ == '__main__':
-    p1 = Point.create_point(400, 200, 0)
-    p2 = Point.create_point(0, 400, 0)
-    p3 = Point.create_point(0, 0, 0)
-    triangle = Triangle.create_triangle(p1, p2, p3)
-    circles = triangle.get_circle(200)
+    p1 = Point.create_point(0, 0, 0)
+    p2 = Point.create_point(400, 0, 0)
+    p3 = Point.create_point(400, 300, 0)
+    p4 = Point.create_point(0, 300, 0)
+    rec = rectangle.create_rectangle(p1, p2, p3, p4)
+    circles = rec.get_circle(200)
     fig = plt.figure(num=1, figsize=(4, 4))
     plt.xlim(-5, 405)
     plt.ylim(-5, 405)
-    # plt.plot([400, 0], [200, 400])
-    # plt.plot([400, 0], [200, 0])
-    # plt.plot([0, 0], [400, 0])
+    # plt.plot([400, 0], [0, 0])
+    # plt.plot([400, 400], [0, 300])
+    # plt.plot([400, 0], [300, 300])
+    # plt.plot([0, 0], [300, 0])
     for circle in circles:
         plot_circle(center=(circle[0].x, circle[0].y), r=circle[1])
     plt.show()
+
+    # p1 = Point.create_point(400, 200, 0)
+    # p2 = Point.create_point(0, 400, 0)
+    # p3 = Point.create_point(0, 0, 0)
+    # triangle = Triangle.create_triangle(p1, p2, p3)
+    # circles = triangle.get_circle(200)
+    # fig = plt.figure(num=1, figsize=(4, 4))
+    # plt.xlim(-5, 405)
+    # plt.ylim(-5, 405)
+    # # plt.plot([400, 0], [200, 400])
+    # # plt.plot([400, 0], [200, 0])
+    # # plt.plot([0, 0], [400, 0])
+    # for circle in circles:
+    #     plot_circle(center=(circle[0].x, circle[0].y), r=circle[1])
+    # plt.show()
