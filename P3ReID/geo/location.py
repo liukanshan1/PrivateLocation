@@ -1,4 +1,4 @@
-from location import utils
+from geo import utils
 
 
 class Location:

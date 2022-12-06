@@ -1,6 +1,6 @@
 from encryption import paillier
-from location.shapes import Rectangle
-from location.location import Location
+from geo.shapes import Rectangle
+from geo.location import Location
 from secomp.secureprotol import SecureComputing
 import math
 from geopy import distance

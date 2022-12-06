@@ -3,10 +3,12 @@ import random
 import matplotlib.pyplot as plt
 import numpy as np
 
-from location.location import Location, encLocation
+from geo.location import encLocation
 
 
 class Area:
+    """一个平面"""
+
     def __init__(self, p1, p2, p3):
         self.A = (p2.y - p1.y) * (p3.z - p1.z) - (p2.z - p1.z) * (p3.y - p1.y)
         self.B = (p2.z - p1.z) * (p3.x - p1.x) - (p2.x - p1.x) * (p3.z - p1.z)
@@ -36,6 +38,8 @@ class Area:
 
 
 class Point:
+    """一个点"""
+
     def __init__(self, loc):
         if loc is None:
             self.x, self.y, self.z = 0, 0, 0
@@ -60,6 +64,8 @@ class Point:
 
 
 class Triangle:
+    """三角形"""
+
     def __init__(self, loc1, loc2, loc3):
         if loc1 is None:
             self.point1 = None
@@ -130,37 +136,46 @@ class Triangle:
         triangle3 = Triangle.create_triangle(self.point3, self.point1, point)
         if not self.square == triangle1.get_square() + triangle2.get_square() + triangle3.get_square():
             return False
+        # 允许一些误差值
         # if not abs(self.square - (triangle1.get_square() + triangle2.get_square() + triangle3.get_square())) < 0.1:
         #     return False
         return True
 
     def get_point(self):
-        coin = random.choice([0, 0, 0, 1, 2, 3])
-        if coin == 0:
-            while True:
-                x = random.uniform(self.min_x, self.max_x)
-                y = random.uniform(self.min_y, self.max_y)
-                z = self.area.get_z(x, y)
-                point = Point.create_point(x, y, z)
-                if self.is_inside(point):
-                    return point
-        else:
-            x_range = (self.max_x - self.min_x) * 0.25
-            y_range = (self.max_y - self.min_y) * 0.25
-            while True:
-                if coin == 1:
-                    x = random.uniform(-x_range, x_range) + self.point1.x
-                    y = random.uniform(-y_range, y_range) + self.point1.y
-                elif coin == 2:
-                    x = random.uniform(-x_range, x_range) + self.point2.x
-                    y = random.uniform(-y_range, y_range) + self.point2.y
-                else:
-                    x = random.uniform(-x_range, x_range) + self.point3.x
-                    y = random.uniform(-y_range, y_range) + self.point3.y
-                z = self.area.get_z(x, y)
-                point = Point.create_point(x, y, z)
-                if self.is_inside(point):
-                    return point
+        # 一定概率上关注三个角
+        # coin = random.choice([0, 0, 0, 0, 1, 2, 3])
+        # if coin == 0:
+        #     while True:
+        #         x = random.uniform(self.min_x, self.max_x)
+        #         y = random.uniform(self.min_y, self.max_y)
+        #         z = self.area.get_z(x, y)
+        #         point = Point.create_point(x, y, z)
+        #         if self.is_inside(point):
+        #             return point
+        # else:
+        #     x_range = (self.max_x - self.min_x) * 0.25
+        #     y_range = (self.max_y - self.min_y) * 0.25
+        #     while True:
+        #         if coin == 1:
+        #             x = random.uniform(-x_range, x_range) + self.point1.x
+        #             y = random.uniform(-y_range, y_range) + self.point1.y
+        #         elif coin == 2:
+        #             x = random.uniform(-x_range, x_range) + self.point2.x
+        #             y = random.uniform(-y_range, y_range) + self.point2.y
+        #         else:
+        #             x = random.uniform(-x_range, x_range) + self.point3.x
+        #             y = random.uniform(-y_range, y_range) + self.point3.y
+        #         z = self.area.get_z(x, y)
+        #         point = Point.create_point(x, y, z)
+        #         if self.is_inside(point):
+        #             return point
+        while True:
+            x = random.uniform(self.min_x, self.max_x)
+            y = random.uniform(self.min_y, self.max_y)
+            z = self.area.get_z(x, y)
+            point = Point.create_point(x, y, z)
+            if self.is_inside(point):
+                return point
 
     def get_radius(self, point):
         triangle1 = Triangle.create_triangle(self.point1, self.point2, point)
@@ -171,24 +186,54 @@ class Triangle:
         h3 = 2 * triangle3.get_square() / self.c
         return min(h1, h2, h3)
 
-    def get_circle(self, num):
+    def get_circles(self, num, strict=0.2):
         result = []
         for i in range(num):
-            point = self.get_point()
-            radius = self.get_radius(point)
+            while True:
+                point = self.get_point()
+                radius = self.get_radius(point)
+                if Triangle.filter(result, [point, radius], strict):
+                    break
             result.append([point, radius])
         return result
 
+    @staticmethod
+    def filter(circles, circle, strict=0.2):
+        # TODO：使用人工智能
+        for round in circles:
+            distant = Point.distant(round[0], circle[0])
+            # 不允许重叠
+            # if distant <= abs(round[1] - circle[1]):
+            #     return False
+            # 不允许相交
+            # if distant < round[1] + circle[1]:
+            #     return False
+            # 允许一定程度相交
+            if distant < (round[1] + circle[1]) * strict + abs(round[1] - circle[1]) * (1-strict):
+                return False
+        return True
+
     def encrypt(self, pk, num=150):
-        circles = self.get_circle(num)
+        circles = self.get_circles(num)
         result = []
         for circle in circles:
             enc_loc = encLocation(pk, [], circle[0].x, circle[0].y, circle[0].z, circle[1], True)
             result.append(enc_loc)
         return result
 
+    def check(self, circles, num=10000):
+        inside = 0
+        for i in range(num):
+            dot = self.get_point()
+            for circle in circles:
+                if Point.distant(circle[0], dot) <= circle[1]:
+                    inside += 1
+                    break
+        return inside/num
+
 
 class Rectangle:
+    """长方形"""
 
     def __init__(self, loc1, loc2, loc3, loc4):
         if loc1 is None:
@@ -219,17 +264,17 @@ class Rectangle:
         r.triangle4 = Triangle.create_triangle(r.point2, r.point3, r.point4)
         return r
 
-    def get_circle(self, num):
+    def get_circles(self, num, strict=0.3):
         num = round(num / 4)
         result = []
-        result.extend(self.triangle1.get_circle(num))
-        result.extend(self.triangle2.get_circle(num))
-        result.extend(self.triangle3.get_circle(num))
-        result.extend(self.triangle4.get_circle(num))
+        result.extend(self.triangle1.get_circles(num, strict))
+        result.extend(self.triangle2.get_circles(num, strict))
+        result.extend(self.triangle3.get_circles(num, strict))
+        result.extend(self.triangle4.get_circles(num, strict))
         return result
 
     def encrypt(self, pk, num=200):
-        circles = self.get_circle(num)
+        circles = self.get_circles(num)
         result = []
         for circle in circles:
             enc_loc = encLocation(pk, [], circle[0].x, circle[0].y, circle[0].z, circle[1], True)
@@ -246,34 +291,45 @@ def plot_circle(center=(3, 3), r=2):
 
 
 if __name__ == '__main__':
-    p1 = Point.create_point(0, 0, 0)
-    p2 = Point.create_point(400, 0, 0)
-    p3 = Point.create_point(400, 300, 0)
-    p4 = Point.create_point(0, 300, 0)
-    rec = Rectangle.create_rectangle(p1, p2, p3, p4)
-    circles = rec.get_circle(200)
-    fig = plt.figure(num=1, figsize=(4, 4))
-    plt.xlim(-5, 405)
-    plt.ylim(-5, 405)
-    # plt.plot([400, 0], [0, 0])
-    # plt.plot([400, 400], [0, 300])
-    # plt.plot([400, 0], [300, 300])
-    # plt.plot([0, 0], [300, 0])
-    for circle in circles:
-        plot_circle(center=(circle[0].x, circle[0].y), r=circle[1])
-    plt.show()
+    # p1 = Point.create_point(0, 0, 0)
+    # p2 = Point.create_point(400, 0, 0)
+    # p3 = Point.create_point(400, 300, 0)
+    # p4 = Point.create_point(0, 300, 0)
+    # rec = Rectangle.create_rectangle(p1, p2, p3, p4)
+    # circles = rec.get_circles(150)
+    # fig = plt.figure(num=1, figsize=(4, 4))
+    # plt.xlim(-5, 405)
+    # plt.ylim(-5, 405)
+    # # plt.plot([400, 0], [0, 0])
+    # # plt.plot([400, 400], [0, 300])
+    # # plt.plot([400, 0], [300, 300])
+    # # plt.plot([0, 0], [300, 0])
+    # for circle in circles:
+    #     plot_circle(center=(circle[0].x, circle[0].y), r=circle[1])
+    # plt.show()
 
     # p1 = Point.create_point(400, 200, 0)
     # p2 = Point.create_point(0, 400, 0)
     # p3 = Point.create_point(0, 0, 0)
     # triangle = Triangle.create_triangle(p1, p2, p3)
-    # circles = triangle.get_circle(200)
     # fig = plt.figure(num=1, figsize=(4, 4))
     # plt.xlim(-5, 405)
     # plt.ylim(-5, 405)
     # # plt.plot([400, 0], [200, 400])
     # # plt.plot([400, 0], [200, 0])
     # # plt.plot([0, 0], [400, 0])
+    # circles = triangle.get_circles(100)
     # for circle in circles:
     #     plot_circle(center=(circle[0].x, circle[0].y), r=circle[1])
     # plt.show()
+
+    p1 = Point.create_point(400, 200, 0)
+    p2 = Point.create_point(0, 400, 0)
+    p3 = Point.create_point(0, 0, 0)
+    triangle = Triangle.create_triangle(p1, p2, p3)
+    res = []
+    for i in range(1000):
+        circles = triangle.get_circles(100)
+        res.append(triangle.check(circles))
+    print(min(res))
+
