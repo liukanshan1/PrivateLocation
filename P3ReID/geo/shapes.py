@@ -221,7 +221,7 @@ class Triangle:
             result.append(enc_loc)
         return result
 
-    def check(self, circles, num=10000):
+    def check(self, circles, num=1000):
         inside = 0
         for i in range(num):
             dot = self.get_point()
@@ -328,7 +328,7 @@ if __name__ == '__main__':
     p3 = Point.create_point(0, 0, 0)
     triangle = Triangle.create_triangle(p1, p2, p3)
     res = []
-    for i in range(1000):
+    for i in range(100):
         circles = triangle.get_circles(100)
         res.append(triangle.check(circles))
     print(min(res))
