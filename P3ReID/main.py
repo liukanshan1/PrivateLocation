@@ -25,7 +25,7 @@ if __name__ == '__main__':
     meilin_M = Rectangle(loc1, loc2, loc3, loc4)
     enc_rec = meilin_M.encrypt(public_key)
 
-
+    
     # User side
     uloc1 = Location([datetime(2022, 10, 1, 9, 30, 00), datetime(2022, 10, 1, 11, 30, 00)],
                      113.422384, 23.111253, 10) # 在里面 时间匹配
@@ -48,7 +48,7 @@ if __name__ == '__main__':
     # print(distance.distance((23.103, 113.370), (23.105, 113.380)).km * 1000)
     # x1, y1, z1 = loc1.toXYZ()
     # x2, y2, z2 = loc2.toXYZ()
-    # print(math.sqrt((x1 + x2) ** 2 + (y1 + y2) ** 2 + (z1 + z2) ** 2))
+    # print(math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2 + (z1 - z2) ** 2))
     # # print('----------Intermediate value-----------')
     # # print(x1, " ", y1, " ", z1)
     # # print(x2, " ", y2, " ", z2)
